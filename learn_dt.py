@@ -30,14 +30,14 @@ A_DIM_P = 6
 A_DIM_H = 2
 ACTOR_LR_RATE = 0.0001
 CRITIC_LR_RATE = 0.001
-VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300]  # Kbps
+VIDEO_BIT_RATE = [1000,2500,5000,8000,16000,40000]  # Kbps
 BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
 HD_REWARD = [1, 2, 3, 12, 15, 20]
 BUFFER_NORM_FACTOR = 10.0
-CHUNK_TIL_VIDEO_END_CAP = 48.0
+CHUNK_TIL_VIDEO_END_CAP = 80.0
 M_IN_K = 1000.0
 BITRATE_LEVELS = 6
-REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 40  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 1  # default video quality without agent
 DEFAULT_PREFETCH = 0 # default prefetch decision without agent
@@ -46,7 +46,8 @@ RAND_RANGE = 1000
 SUMMARY_DIR = './results'
 LOG_FILE = './results/log_pensieve'
 # log in format of time_stamp bit_rate buffer_size rebuffer_time chunk_size download_time reward
-NN_MODEL = './models/pretrain_linear_reward.ckpt'
+#NN_MODEL = './models/pretrain_linear_reward.ckpt'
+NN_MODEL = './models/nn_model_ep_217600.ckpt'
 
 
 def split_train_test(obss, acts, train_frac):
@@ -189,20 +190,20 @@ if __name__ == '__main__':
     #         max_reward = reward
 
     # save decision tree to file
-    with open('decision_tree/' + args.abr + '_' + args.traces + '_' + str(args.leaf_nodes) + '.pk3', 'wb') as f:
+    with open('./results/decision_tree/' + args.abr + '_' + args.traces + '_' + str(args.leaf_nodes) + '.pk3', 'wb') as f:
         pk.dump(best_tree, f)
 
-    if args.visualize = True:
+    if args.visualize == True:
         dot_data = StringIO()
         export_graphviz(best_tree, out_file=dot_data, filled=True)
         out_graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
-        out_graph.write_svg('tree/' + args.abr + '.svg')
+        out_graph.write_svg('./results/tree/' + args.abr + '.svg')
 
-    with open('precision/' + args.abr + '_' + args.traces + '_' + str(args.leaf_nodes) + '.csv', 'wb') as f:
+    with open('./results/precision/' + args.abr + '_' + args.traces + '_' + str(args.leaf_nodes) + '.csv', 'wb') as f:
         for i in precision:
             f.write(bytes(str(i) + '\n', encoding='utf-8'))
 
-    with open('time/' + args.abr + '_' + args.traces + '_' + str(args.leaf_nodes) + '.csv', 'w', newline='') as f:
+    with open('./results/time/' + args.abr + '_' + args.traces + '_' + str(args.leaf_nodes) + '.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         for time_breakdown in time_calc:
             writer.writerow(time_breakdown)
